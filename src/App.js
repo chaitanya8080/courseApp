@@ -91,11 +91,11 @@ function App() {
           }
         ></Route>
         <Route
-          path="/Register"
+          path="/register"
           element={
             <ProtectedRoute
             isAuthenticated={!isAuthenticated}
-            redirect="/profile"
+            redirect ="/profile"
             >
               <Register />
             </ProtectedRoute>

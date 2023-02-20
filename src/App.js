@@ -90,7 +90,17 @@ function App() {
             </ProtectedRoute>
           }
         ></Route>
-        <Route path="/Register" element={<Register />}></Route>
+        <Route
+          path="/Register"
+          element={
+            <ProtectedRoute
+            isAuthenticated={!isAuthenticated}
+            redirect="/profile"
+            >
+              <Register />
+            </ProtectedRoute>
+          }
+        ></Route>
         <Route path="/forgetpassword" element={<ForgetPassword />}></Route>
         <Route path="/resetpassword/:token" element={<ResetPassword />}></Route>
         <Route path="/subscribe" element={<Subscribe />}></Route>

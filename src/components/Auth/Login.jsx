@@ -9,18 +9,27 @@ import {
   VStack,
 } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { login } from '../../redux/actions/user';
 
 const Login = () => {
   const [email, setEmail] = useState('');
 
   const [password, setPassword] = useState('');
 
+  const dispatch = useDispatch()
+
+  const submitHandler = (e)=>{
+    e.preventDefault()
+     dispatch(login(email,password))
+  }
+
   return (
     <Container h={'95vh'}>
       <VStack h={'full'} justifyContent="center" spacing={'16'}>
         <Heading children="Welcome to Courses"></Heading>
 
-        <form style={{ width: '100%' }}>
+        <form onSubmit={submitHandler} style={{ width: '100%' }}>
           <Box my={'4'}>
             <FormLabel htmlFor="email" children="Email Address"></FormLabel>
             <Input
@@ -29,7 +38,7 @@ const Login = () => {
               value={email}
               onChange={e => setEmail(e.target.value)}
               type="email"
-              placeholder="emter your email"
+              placeholder="enter your email"
               focusBorderColor="yellow.500"
             />
           </Box>
@@ -41,7 +50,7 @@ const Login = () => {
               id="email"
               value={password}
               onChange={e => setPassword(e.target.value)}
-              type="email"
+              type="password"
               placeholder="enter your password"
               focusBorderColor="yellow.500"
             />

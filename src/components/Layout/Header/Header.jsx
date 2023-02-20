@@ -14,6 +14,9 @@ import {
   VStack,
   HStack,
 } from '@chakra-ui/react';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../redux/actions/user';
+
 
 
 const LinkButton = ({ url = '/', title='Home',onClose}) => (
@@ -21,17 +24,17 @@ const LinkButton = ({ url = '/', title='Home',onClose}) => (
     <Button varient={'ghost'}>{title}</Button>
   </Link>
 );
-const Header = () => {
+const Header = ({isAuthenticated = false,user}) => {
+
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const isAuthenticated = true;
-const user = {
-  role:'admin'
-}
+
+  const dispatch = useDispatch()
 
 const logoutHandler = ()=>{
-   console.log("logout")
+  
    onClose()
+   dispatch(logout())
 }
   return (
     <>

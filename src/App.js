@@ -23,20 +23,24 @@ import Dashboard from './components/Admin/Dashboard/Dashboard';
 import CreateCourse from './components/Admin/CreateCourse/CreateCourse';
 import Users from './components/Admin/Users/Users';
 import AdminCourses from './components/Admin/Courses/AdminCourses';
+import Loader from './components/Layout/Loader/Loader';
+
 import { useDispatch, useSelector } from 'react-redux';
 
 import toast, { Toaster } from 'react-hot-toast';
 import { useEffect } from 'react';
 import { loadUser } from './redux/actions/user';
-
 import { ProtectedRoute } from 'protected-route-react';
+
+
+
 
 function App() {
   window.addEventListener('contextmenu', e => {
     e.preventDefault();
   });
 
-  const { isAuthenticated, user, message, error } = useSelector(
+  const { isAuthenticated, user, message, error,loading } = useSelector(
     state => state.user
   );
 
@@ -60,63 +64,115 @@ function App() {
   return (
     <BrowserRouter>
       <Header isAuthenticated={isAuthenticated} user={user} />
+      {loading?<Loader></Loader>:<>
       <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/courses" element={<Courses></Courses>}></Route>
-        <Route path="/course/:id" element={<CoursePage />}></Route>
-        <Route path="/contact" element={<Contact></Contact>}></Route>
+  
+      <Route path="/" element={<Home />}></Route>
+      <Route path="/courses" element={<Courses></Courses>}></Route>
+      <Route path="/course/:id" element={<CoursePage />}></Route>
+      <Route path="/contact" element={<Contact></Contact>}></Route>
 
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute isAuthenticated={isAuthenticated}>
-              <Profile />
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route path="/changepassword" element={<ChangePassword />}></Route>
-        <Route path="/updateprofile" element={<UpdateProfile />}></Route>
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <Profile user={user} />
+          </ProtectedRoute>
+        }
+      ></Route>
+      <Route
+        path="/changepassword"
+        element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <ChangePassword />
+          </ProtectedRoute>
+        }
+      ></Route>
+      <Route
+        path="/updateprofile"
+        element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <UpdateProfile />
+          </ProtectedRoute>
+        }
+      ></Route>
 
-        <Route path="/request" element={<Request />}></Route>
-        <Route path="/about" element={<About />}></Route>
-        <Route
-          path="/login"
-          element={
-            <ProtectedRoute
-              isAuthenticated={!isAuthenticated}
-              redirect="/profile"
-            >
-              <Login />
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route
-          path="/register"
-          element={
-            <ProtectedRoute
+      <Route path="/request" element={<Request />}></Route>
+      <Route path="/about" element={<About />}></Route>
+      <Route
+        path="/login"
+        element={
+          <ProtectedRoute
             isAuthenticated={!isAuthenticated}
-            redirect ="/profile"
-            >
-              <Register />
-            </ProtectedRoute>
-          }
-        ></Route>
-        <Route path="/forgetpassword" element={<ForgetPassword />}></Route>
-        <Route path="/resetpassword/:token" element={<ResetPassword />}></Route>
-        <Route path="/subscribe" element={<Subscribe />}></Route>
-        <Route path="*" element={<NotFound />}></Route>
-        <Route path="/paymentsuccess" element={<PaymentSuccess />}></Route>
-        <Route path="/paymentfail" element={<PaymentFail />}></Route>
+            redirect="/profile"
+          >
+            <Login />
+          </ProtectedRoute>
+        }
+      ></Route>
+      <Route
+        path="/register"
+        element={
+          <ProtectedRoute
+            isAuthenticated={!isAuthenticated}
+            redirect="/profile"
+          >
+            <Register />
+          </ProtectedRoute>
+        }
+      ></Route>
+      <Route path="/forgetpassword" element={<ForgetPassword />}></Route>
+      <Route path="/resetpassword/:token" element={<ResetPassword />}></Route>
+      <Route
+        path="/subscribe"
+        element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <Subscribe />
+          </ProtectedRoute>
+        }
+      ></Route>
+      <Route path="*" element={<NotFound />}></Route>
+      <Route path="/paymentsuccess" element={<PaymentSuccess />}></Route>
+      <Route path="/paymentfail" element={<PaymentFail />}></Route>
 
-        {/* admin  */}
-        <Route
-          path="/admin/dashboard"
-          element={<Dashboard></Dashboard>}
-        ></Route>
-        <Route path="/admin/createcourse" element={<CreateCourse />}></Route>
-        <Route path="/admin/users" element={<Users />}></Route>
-        <Route path="/admin/courses" element={<AdminCourses />}></Route>
+      {/* admin  */}
+      <Route
+        path="/admin/dashboard"
+        element={
+        
+<Dashboard />
+        }
+      ></Route>
+      <Route path="/admin/createcourse" element={
+          <ProtectedRoute
+          adminRoute={true}
+          isAuthenticate={isAuthenticated}
+          isAdmin={user && user.role === 'admin'}
+        >
+          <CreateCourse />
+        </ProtectedRoute>
+      }></Route>
+      <Route path="/admin/users" element={
+          <ProtectedRoute
+          adminRoute={true}
+          isAuthenticate={isAuthenticated}
+          isAdmin={user && user.role === 'admin'}
+        >
+          <Users />
+        </ProtectedRoute>
+      }></Route>
+      <Route path="/admin/courses" element={
+          <ProtectedRoute
+          adminRoute={true}
+          isAuthenticate={isAuthenticated}
+          isAdmin={user && user.role === 'admin'}
+        >
+          <AdminCourses />
+        </ProtectedRoute>
+      }></Route>
+     
       </Routes>
+      </>}
       <Footer />
       <Toaster />
     </BrowserRouter>

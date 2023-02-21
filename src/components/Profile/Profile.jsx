@@ -24,23 +24,12 @@ import { Link } from 'react-router-dom';
 
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { fileUploadCss } from '../Auth/Register';
+import { updateProfilePicture } from '../../redux/actions/profile';
+import { useDispatch } from 'react-redux';
 
-const Profile = () => {
-  const user = {
-    name: 'chaitanya',
-    email: 'chaitanya@gmail',
-    createdAt: new Date().toISOString(),
-    role: 'user',
-    subscription: {
-      status: 'active',
-    },
-    playlist: [
-      {
-        course: 'asafas',
-        poster: 'asjlfk',
-      },
-    ],
-  };
+const Profile = ({user}) => {
+   
+  const dispatch = useDispatch()
 
   const removeFromPlayListHandler = id => {
     console.log(id);
@@ -48,7 +37,9 @@ const Profile = () => {
 
   const changeImageSubmitHandler = (e, image)=>{
     e.preventDefault()
-    console.log(image);
+    const myForm = new FormData();
+    myForm.append('file',image)
+    dispatch(updateProfilePicture(myForm))
   }
 
 const {isOpen, onClose, onOpen}= useDisclosure()
@@ -66,7 +57,7 @@ const {isOpen, onClose, onOpen}= useDisclosure()
         padding="8"
       >
         <VStack>
-          <Avatar boxSize={'48'} />
+          <Avatar boxSize={'48'} src={user.avatar.url} />
           <Button onClick={onOpen} colorScheme={'yellow'} varient="ghost">
             Change Photo
           </Button>
@@ -89,7 +80,7 @@ const {isOpen, onClose, onOpen}= useDisclosure()
           {user.role !== 'admin' && (
             <HStack>
               <Text children="Subscription" fontWeight={'bold'} />
-              {user.subscription.status === 'active' ? (
+              {user.subscription && user.subscription.status === 'active' ? (
                 <Button color="yellow.600" varient="unstyle">
                   Cancel Subscription
                 </Button>

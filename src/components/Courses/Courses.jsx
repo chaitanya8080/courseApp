@@ -10,7 +10,11 @@ import {
   Image,
 } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { getAllCourses } from '../../redux/actions/course';
 
 const Course = ({
   views,
@@ -81,8 +85,14 @@ const Courses = () => {
 
   const [category, setCategory] = useState('');
 
-  const addToPlaylistHandler =()=>{
-    console.log("Playlist added");
+  const dispatch = useDispatch()
+
+const {loading, course, error} = useSelector(state=>state.course)
+
+
+
+  const addToPlaylistHandler =(courseId)=>{
+    console.log("Playlist added", courseId);
   }
 
   const categories = [
@@ -91,12 +101,25 @@ const Courses = () => {
     'Date Structure and algorithm',
     'Yoga',
   ];
+
+
+  useEffect(()=>{
+        dispatch(getAllCourses(keyword , category))
+
+        if(error){
+          toast.error(error.message)
+          dispatch({type:"clearError"})
+        }
+   
+  },[error,dispatch,keyword,category])
+
+
   return (
     <Container minH={'95vh'} maxW="container.lg" padding={'8'}>
       <Heading children="All Courses" m={'8'} />
       <Input
         value={keyword}
-        onChange={e => setkeyword(e.target.value)}
+        onChange={(e)=> setkeyword(e.target.value)}
         placeholder="Search a course"
         type={'text'}
       ></Input>
@@ -119,16 +142,19 @@ const Courses = () => {
         justifyContent={['flex-start', 'space-evenly']}
         alignItems={['center', 'flex-start']}
       >
-        <Course
-          title={'sample'}
-          description={'sample'}
-          views={23}
-          pageSrc={'sample'}
-          id={'sample'}
-          creator={'sample person'}
-          lectureCount={2}
+  {course.length>0 ? (course.map((item)=>(
+          <Course
+          key={item._id}
+          title={item.title}
+          description={item.description}
+          views={item.views}
+          imageSrc={item.poster.url}
+          id={item._id}
+          creator={item.createdBy}
+          lectureCount={item.noOfVideos}
         addToPlaylistHandler={addToPlaylistHandler}
         />
+  ))):(<Text fontSize={"3xl"} mt="2em">Course Not Found</Text>)}
       </Stack>
     </Container>
   );

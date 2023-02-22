@@ -9,7 +9,7 @@ const ChangePassword = () => {
 const [oldPassword, setOldPassword] = useState('')
 const [newPassword, setNewPassword] = useState('')
 
-const {loading, message, error} = useSelector(state=>state.profile)
+const data = useSelector(state=>state.profile)
 
 const dispatch = useDispatch();
 
@@ -19,18 +19,18 @@ const submitHandler = (e)=>{
   dispatch(changePassword(oldPassword,newPassword))
 }
 
-
+console.log(data)
 
 useEffect(()=>{
-  if(error){
-    toast.error(error)
+  if(data.error){
+    toast.error(data?.error?.message)
     dispatch({type:"clearError"})
   }
-  if(message){
-    toast.success(message)
+  if(data.message){
+    toast.success(data.message)
     dispatch({type:"clearMessage"})
   }
-},[dispatch,error,message])
+},[dispatch,data.error,data.message])
 
   return (
     <Container py={'16'} minH={'90vh'}>
@@ -64,7 +64,7 @@ useEffect(()=>{
               focusBorderColor="yellow.500"
             />
 
-            <Button isLoading={loading} w='full' colorScheme={'yellow'} type='submit' >Change</Button>
+            <Button isLoading={data.loading} w='full' colorScheme={'yellow'} type='submit' >Change</Button>
         </VStack>
       </form>
     </Container>

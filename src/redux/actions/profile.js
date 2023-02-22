@@ -19,7 +19,7 @@ export const updateProfile =(name, email)=> async dispatch=>{
 
     
 
-        dispatch({type:"updateProfileSuccess", paylod:data.message})
+        dispatch({type:"updateProfileSuccess", payload:data.message})
 
     } catch (error) {
         dispatch({type:"updateProfileFail",
@@ -41,11 +41,11 @@ export const changePassword = (oldPassword,newPassword)=> async dispatch=>{
 
    
 
-        dispatch({type:"changePasswordSuccess", paylod:data.message})
+        dispatch({type:"changePasswordSuccess", payload:data.message})
         
     } catch (error) {
         dispatch({type:"changePasswordFail",
-       payload:error.response.data.message
+       payload:error.response.data
     })
     }
 }
@@ -64,7 +64,7 @@ export const updateProfilePicture =(formdata)=> async dispatch=>{
 
       
 
-        dispatch({type:"updateProfilePictureSuccess", paylod:data.message})
+        dispatch({type:"updateProfilePictureSuccess", payload:data.message})
         
     } catch (error) {
         dispatch({type:"updateProfilePictureFail",

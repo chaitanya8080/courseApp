@@ -52,7 +52,7 @@ function App() {
       dispatch({ type: 'clearError' });
     }
     if (message) {
-      toast.error(message);
+      toast.success(message);
       dispatch({ type: 'clearMessage' });
     }
   }, [dispatch, error, message]);

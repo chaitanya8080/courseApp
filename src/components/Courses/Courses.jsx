@@ -15,6 +15,8 @@ import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getAllCourses } from '../../redux/actions/course';
+import { addToPlaylist } from '../../redux/actions/profile';
+import { loadUser } from '../../redux/actions/user';
 
 const Course = ({
   views,
@@ -25,6 +27,7 @@ const Course = ({
   description,
   creator,
   lectureCount,
+  loading,
 }) => {
   return (
     <VStack className="course" alignItems={['center', 'flex-start']}>
@@ -70,6 +73,7 @@ const Course = ({
         </Link>
 
         <Button
+            isLoading={loading}
             varient={'ghost'}
             onClick={()=>addToPlaylistHandler(id)}
           >
@@ -87,12 +91,16 @@ const Courses = () => {
 
   const dispatch = useDispatch()
 
-const {loading, course, error} = useSelector(state=>state.course)
+const {loading, course, error,message} = useSelector(state=>state.course)
 
 
 
-  const addToPlaylistHandler =(courseId)=>{
-    console.log("Playlist added", courseId);
+  const addToPlaylistHandler = async (courseId)=>{
+    // console.log("Playlist added", courseId);
+
+    await dispatch(addToPlaylist(courseId))
+    dispatch(loadUser());
+
   }
 
   const categories = [
@@ -107,11 +115,15 @@ const {loading, course, error} = useSelector(state=>state.course)
         dispatch(getAllCourses(keyword , category))
 
         if(error){
-          toast.error(error.message)
+          toast.error(error)
           dispatch({type:"clearError"})
         }
+        if(message){
+          toast.success(message)
+          dispatch({type:"clearMessage"})
+        }
    
-  },[error,dispatch,keyword,category])
+  },[error,dispatch,keyword,category,message])
 
 
   return (
@@ -153,6 +165,7 @@ const {loading, course, error} = useSelector(state=>state.course)
           creator={item.createdBy}
           lectureCount={item.noOfVideos}
         addToPlaylistHandler={addToPlaylistHandler}
+        loading={loading}
         />
   ))):(<Text fontSize={"3xl"} mt="2em">Course Not Found</Text>)}
       </Stack>

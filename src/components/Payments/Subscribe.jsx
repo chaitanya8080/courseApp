@@ -6,9 +6,46 @@ import {
   Text,
   VStack,
 } from '@chakra-ui/react';
+
+
 import React from 'react';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+
+import { buySubscription, loadUser } from '../../redux/actions/user';
+
 
 const Subscribe = () => {
+  const { loading, error, subscriptionId } = useSelector(
+    state => state.subscription
+  );
+  const dispatch = useDispatch();
+
+  const navigate = useNavigate();
+
+  const subscribeHandler = async () => {
+
+     dispatch(buySubscription());
+ 
+
+    navigate('/profile');
+
+    dispatch(loadUser())
+  };
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error.message);
+      dispatch({ type: 'clearError' });
+    }
+    if (subscriptionId) {
+      toast.success('subscription Id generated and user subscribed');
+    }
+  }, [dispatch, error, subscriptionId]);
+
   return (
     <Container h="90vh" p="16">
       <Heading children="welcome" my="8" textAlign={'center'}></Heading>
@@ -25,12 +62,17 @@ const Subscribe = () => {
         <Box p="4">
           <VStack textAlign={'center'} px="8" mt={'4'} spacing="8">
             <Text
-              
               children={'Join pro pack and get access to all content'}
             ></Text>
             <Heading size="md" children={'Rs 399.00 only'}></Heading>
 
-            <Button my="8" w="full" colorScheme={'yellow'}>
+            <Button
+              onClick={subscribeHandler}
+              my="8"
+              w="full"
+              colorScheme={'yellow'}
+              isLoading={loading}
+            >
               Buy Now
             </Button>
             <Box

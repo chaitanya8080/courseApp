@@ -24,15 +24,24 @@ import { Link } from 'react-router-dom';
 
 import { RiDeleteBin7Fill } from 'react-icons/ri';
 import { fileUploadCss } from '../Auth/Register';
-import { updateProfilePicture } from '../../redux/actions/profile';
+import {
+  removeFromPlaylist,
+  updateProfilePicture,
+} from '../../redux/actions/profile';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadUser } from '../../redux/actions/user';
+import { cancelSubscription, loadUser } from '../../redux/actions/user';
 import toast from 'react-hot-toast';
 
 const Profile = ({ user }) => {
   const dispatch = useDispatch();
 
   const { loading, message, error } = useSelector(state => state.profile);
+
+  const {
+    loading: subLoading,
+    message: subMessage,
+    error: subError,
+  } = useSelector(state => state.subscription);
 
   useEffect(() => {
     if (error) {
@@ -43,10 +52,24 @@ const Profile = ({ user }) => {
       toast.success(message);
       dispatch({ type: 'clearMessage' });
     }
-  }, [dispatch, error, message]);
 
-  const removeFromPlayListHandler = id => {
-    console.log(id);
+    if (subError) {
+      toast.error("Your time of 7 days of subscription cancelation is over");
+      dispatch({ type: 'clearError' });
+    }
+    if (subMessage) {
+      toast.success(subMessage);
+      dispatch({ type: 'clearMessage' });
+
+      dispatch(loadUser())
+    }
+  }, [dispatch, error, message, subError, subMessage]);
+
+  const removeFromPlayListHandler = async id => {
+    // console.log(id);
+    await dispatch(removeFromPlaylist(id));
+
+    dispatch(loadUser());
   };
 
   const changeImageSubmitHandler = async (e, image) => {
@@ -58,6 +81,12 @@ const Profile = ({ user }) => {
   };
 
   const { isOpen, onClose, onOpen } = useDisclosure();
+
+  const cancelSubscriptionHandler = () => {
+    dispatch(cancelSubscription());
+
+
+  };
 
   return (
     <Container minH={'95vh'} maxW="container.lg" py="8">
@@ -72,12 +101,7 @@ const Profile = ({ user }) => {
       >
         <VStack>
           <Avatar boxSize={'48'} src={user.avatar.url} />
-          <Button
-           
-            onClick={onOpen}
-            colorScheme={'yellow'}
-            varient="ghost"
-          >
+          <Button onClick={onOpen} colorScheme={'yellow'} varient="ghost">
             Change Photo
           </Button>
         </VStack>
@@ -100,7 +124,12 @@ const Profile = ({ user }) => {
             <HStack>
               <Text children="Subscription" fontWeight={'bold'} />
               {user.subscription && user.subscription.status === 'active' ? (
-                <Button color="yellow.600" varient="unstyle">
+                <Button
+                  color="yellow.600"
+                  varient="unstyle"
+                  onClick={cancelSubscriptionHandler}
+                  isLoading={subLoading}
+                >
                   Cancel Subscription
                 </Button>
               ) : (
@@ -147,6 +176,7 @@ const Profile = ({ user }) => {
 
                 <Button
                   onClick={() => removeFromPlayListHandler(element.course)}
+                  isLoading={loading}
                 >
                   <RiDeleteBin7Fill></RiDeleteBin7Fill>
                 </Button>
@@ -168,7 +198,12 @@ const Profile = ({ user }) => {
 
 export default Profile;
 
-function ChangePhotoBox({ isOpen, onClose, changeImageSubmitHandler,loading }) {
+function ChangePhotoBox({
+  isOpen,
+  onClose,
+  changeImageSubmitHandler,
+  loading,
+}) {
   const [imagePrv, setImagePrv] = useState('');
   const [image, setImage] = useState('');
 
@@ -205,7 +240,12 @@ function ChangePhotoBox({ isOpen, onClose, changeImageSubmitHandler,loading }) {
                   css={{ '&::file-selector-button': fileUploadCss }}
                   onChange={changeImage}
                 />
-                <Button isLoading={loading} w="full" colorScheme={'yellow'} type="submit">
+                <Button
+                  isLoading={loading}
+                  w="full"
+                  colorScheme={'yellow'}
+                  type="submit"
+                >
                   Change
                 </Button>
               </VStack>
@@ -214,7 +254,7 @@ function ChangePhotoBox({ isOpen, onClose, changeImageSubmitHandler,loading }) {
         </ModalBody>
 
         <ModalFooter>
-          <Button  m="3" onClick={closeHandler}>
+          <Button m="3" onClick={closeHandler}>
             Cancle
           </Button>
         </ModalFooter>

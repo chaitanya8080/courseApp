@@ -1,16 +1,25 @@
-import { Box, Button, Container, Grid, Heading, Image, Input, VStack } from '@chakra-ui/react';
+import { Button, Container, Grid, Heading, Image, Input, VStack } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { createCourse } from '../../../redux/actions/admin';
 import { fileUploadCss } from '../../Auth/Register';
 import Sidebar from '../Sidebar';
 
 const CreateCourse = () => {
 
-  const [title , setTitle] = useState()
-  const [description , setDescription] = useState()
-  const [createdby ,setCreatedby] = useState()
-  const [category , setCategory] = useState()
+  const [title , setTitle] = useState("")
+  const [description , setDescription] = useState("")
+  const [createdBy ,setCreatedby] = useState("")
+  const [category , setCategory] = useState("")
   const [image, setImage]= useState()
   const [imagePrv, setImagePrv] = useState()
+
+const dispatch = useDispatch()
+
+
+const {loading, error, message} = useSelector(state=>state.admin)
 
   const categories = [
     'web development',
@@ -38,6 +47,30 @@ const CreateCourse = () => {
   }
 
 
+  const submitHandler = (e)=>{
+      e.preventDefault()
+      const myForm = new FormData();
+      myForm.append('title', title)
+      myForm.append('description',description)
+      myForm.append('category',category)
+      myForm.append('createdBy',createdBy)
+      myForm.append('file',image)
+  
+  
+      dispatch(createCourse(myForm))
+  }
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+    if (message) {
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+  }, [dispatch, error, message]);
+
   return (
     <Grid
       minH={'100vh'}
@@ -46,7 +79,7 @@ const CreateCourse = () => {
       templateColumns={['1fr', '5fr 1fr']}
     >
      <Container py='16'>
-     <form>
+     <form onSubmit={submitHandler}>
          <Heading textTransform={'uppercase'}
             children='Create Course'
             my='16'
@@ -60,7 +93,7 @@ const CreateCourse = () => {
             value={title}
             onChange={e => setTitle(e.target.value)}
             type="text"
-            placeholder={title}
+            placeholder="title"
             focusBorderColor="purple.300"
           />
 
@@ -68,12 +101,12 @@ const CreateCourse = () => {
             value={description}
             onChange={e => setDescription(e.target.value)}
             type="text"
-            placeholder={description}
+            placeholder="description"
             focusBorderColor="purple.300"
           />
 
             <Input
-            value={createdby}
+            value={createdBy}
             onChange={e => setCreatedby(e.target.value)}
             type="text"
             placeholder='creator name'
@@ -110,7 +143,7 @@ const CreateCourse = () => {
               <Image src={imagePrv} boxSize='64' objectFit={'contain'} />
             )}
 
-            <Button width={'full'} colorScheme='purple' type='submit'>
+            <Button width={'full'} colorScheme='purple' type='submit' isLoading={loading}>
               Create
             </Button>
          </VStack>

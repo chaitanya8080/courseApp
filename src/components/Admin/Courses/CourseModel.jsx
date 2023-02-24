@@ -28,12 +28,13 @@ const CourseModel = ({
   addLectureHandler,
   lectures = [1,2,3,4],
   courseTitle,
+  loading
 }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [video, setVideo] = useState();
   const [videoPrv, setVideoPrv] = useState();
-
+  
 
   const fileUploadStyle = {
     '&::file-selector-button': 
@@ -83,11 +84,12 @@ const CourseModel = ({
                          <VideoCard
                          key={i}
                          num={i+1}
-                         title="First video "
-                         description="this is intro lecure"
-                         lectureId="1222"
+                         title={item.title}
+                         description={item.description}
+                         lectureId={item._id}
                          courseId={id}
                          deleteButtonHandler={deleteButtonHandler}
+                         loading={loading}
                        />
               ))}
          
@@ -120,7 +122,8 @@ const CourseModel = ({
                   ></Input>
 
 <Input
-              accept="video/mp4"
+              // accept="video/mp4"
+              accept="image/*"
               required
               id="chooseAvatar"
               type={'file'}
@@ -165,6 +168,7 @@ function VideoCard({
   lectureId,
   courseId,
   deleteButtonHandler,
+  loading
 }) {
   return (
     <Stack
@@ -181,6 +185,7 @@ function VideoCard({
         <Text children={description}></Text>
       </Box>
       <Button
+      isLoading={loading}
         color={'purple.600'}
         onClick={() => deleteButtonHandler(courseId, lectureId)}
       >

@@ -3,7 +3,7 @@
 import { Spinner, VStack } from '@chakra-ui/react'
 import React from 'react'
 
- const Loader = ({color="yellow.500"}) => {
+ const Loader = ({color="purple.500"}) => {
   return (
     <VStack
     h="100vh"

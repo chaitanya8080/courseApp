@@ -15,43 +15,77 @@ import {
   Tr,
   useDisclosure,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { addLecture, deleteCourse, deleteLecture } from '../../../redux/actions/admin';
+import { getAllCourses, getCourseLectures } from '../../../redux/actions/course';
 
 
 import Sidebar from '../Sidebar';
 import CourseModel from './CourseModel';
 
 const AdminCourses = () => {
-  const courses = [{
-    _id:'1111',
-    title:'React Course',
-    category:'Web development',
-    createdBy:'Chaitanya G',
-    poster:{url:'active'},
-    views:456,
-    noOfVideos :33
-  }];
+
+
+  const dispatch = useDispatch()
+
+
+
+  const {course, lectures}= useSelector((state)=>state.course)
+
+  const {loading,error,message} = useSelector((state)=>state.admin)
 
   const {isOpen, onClose, onOpen} = useDisclosure()
 
- const courseDetailsHandler =(userId)=>{
+  const [courseIdfordelete , setCourseId] = useState("")
+  const [courseTitle , setCourseTitle] = useState("")
+
+ const courseDetailsHandler =(courseId, title)=>{
+  dispatch(getCourseLectures(courseId))
   onOpen();
+  setCourseId(courseId)
+  setCourseTitle(title)
  }
 
- const deleteButtonHandler = (userId)=>{
-  console.log(userId)
+ const deleteButtonHandler = (courseId)=>{
+    dispatch(deleteCourse(courseId))
  }
 
- const deleteLectureButtonHandler =(courseId, lectureId)=>{
-  console.log(courseId)
-  console.log(lectureId)
+ const deleteLectureButtonHandler = async (courseId, lectureId)=>{
+   await dispatch(deleteLecture(courseId,lectureId))
+
+   dispatch(getCourseLectures(courseId));
  }
 
-const addLectureHandler =({e,courseId,title,description,video})=>{
+const addLectureHandler = async (e,courseId, title, description, video)=>{
   
   e.preventDefault()
+   console.log({courseId, title,description})
+  const myForm = new FormData();
+  myForm.append('title', title)
+  myForm.append('description',description)
+  myForm.append('file',video)
+  await dispatch(addLecture(courseId,myForm))
 
+  dispatch(getCourseLectures(courseId))
 }
+
+
+useEffect(() => {
+  if (error) {
+    toast.error(error);
+    dispatch({ type: 'clearError' });
+  }
+  if (message) {
+    toast.success(message);
+    dispatch({ type: 'clearMessage' });
+  }
+
+  dispatch(getAllCourses())
+
+}, [dispatch, error, message]);
 
   return (
     <Grid
@@ -86,10 +120,11 @@ const addLectureHandler =({e,courseId,title,description,video})=>{
             </Thead>
 
             <Tbody>
-          {  courses.map(item=>(
+          {  course.map(item=>(
              <Row 
              courseDetailsHandler={courseDetailsHandler}
              deleteButtonHandler={deleteButtonHandler}
+             loading={loading}
              item={item}
               key={item._id}/>
           ))}
@@ -100,10 +135,12 @@ const addLectureHandler =({e,courseId,title,description,video})=>{
         <CourseModel 
         isOpen={isOpen} 
         onClose={onClose} 
-        id={'asdfasdf'}
-        courseTitle='React Course'
+        lectures={lectures}
+        id={courseIdfordelete}
+        courseTitle={courseTitle}
         deleteButtonHandler={deleteLectureButtonHandler}
         addLectureHandler={addLectureHandler}
+        loading={loading}
          />
    
 
@@ -116,7 +153,7 @@ const addLectureHandler =({e,courseId,title,description,video})=>{
 
 
 
-function Row({item, courseDetailsHandler, deleteButtonHandler}) {
+function Row({item, courseDetailsHandler, deleteButtonHandler,loading}) {
   return (
     <Tr>
       <Td>{item._id}</Td>
@@ -134,9 +171,10 @@ function Row({item, courseDetailsHandler, deleteButtonHandler}) {
           <Button children='View Lectures'
            varient='outline'
            color='purple.500' 
-           onClick={()=>courseDetailsHandler(item._id)}
+           onClick={()=>courseDetailsHandler(item._id,item.title)}
+           isLoading={loading}
            />
-          <Button color={'purple.600'}
+          <Button isLoading={loading} color={'purple.600'}
             onClick={()=>deleteButtonHandler(item._id)}
           >
            Delete

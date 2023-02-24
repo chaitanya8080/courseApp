@@ -14,28 +14,51 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import React from 'react';
-
+import { useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllUsers, updateUserRole } from '../../../redux/actions/admin';
+import Loader from "../../Layout/Loader/Loader"
 
 import Sidebar from '../Sidebar';
 
-const Users = () => {
-  const users = [{
-    _id:'one',
-    name:'one name it is',
-    role:'admin',
-    email:'one@123',
-    subscription:{status:'active'},
-  }];
 
+
+const Users = () => {
+
+  const {users,loading,error,message} = useSelector((state)=>state.admin)
+
+  const dispatch = useDispatch()
 
 
  const updateHandler =(userId)=>{
-  console.log(userId)
+  dispatch(updateUserRole(userId))
  }
 
  const deleteButtonHandler = (userId)=>{
   console.log(userId)
  }
+
+
+ useEffect(()=>{
+
+dispatch(getAllUsers())
+ },[dispatch])
+
+
+ 
+useEffect(() => {
+  if (error) {
+    toast.error(error);
+    dispatch({ type: 'clearError' });
+  }
+  if (message) {
+    toast.success(message);
+    dispatch({ type: 'clearMessage' });
+  }
+
+}, [dispatch, error, message]);
+
 
   return (
     <Grid
@@ -44,7 +67,8 @@ const Users = () => {
       css={{ cursor: `url(), default` }}
       templateColumns={['1fr', '5fr 1fr']}
     >
-      <Box p={['0', '16']} overFlowX="auto">
+      {loading ? (<Loader></Loader>):(
+        <Box p={['0', '16']} overFlowX="auto">
         <Heading
           textTransform={'uppercase'}
           children="All Users"
@@ -68,7 +92,7 @@ const Users = () => {
             </Thead>
 
             <Tbody>
-          {  users.map(item=>(
+          { users && users.map(item=>(
              <Row 
              updateHandler={updateHandler}
              deleteButtonHandler={deleteButtonHandler}
@@ -79,6 +103,7 @@ const Users = () => {
           </Table>
         </TableContainer>
       </Box>
+      )}
 
       <Sidebar />
     </Grid>
@@ -94,7 +119,7 @@ function Row({item, updateHandler, deleteButtonHandler}) {
       <Td>{item.name}</Td>
       <Td>{item.email}</Td>
       <Td>{item.role}</Td>
-      <Td>{item.subscription.status === 'active' ? 'Active' : 'Not active'}</Td>
+      <Td>{item.subscription && item.subscription.status === 'active' ? 'Active' : 'Not active'}</Td>
       <Td isNumeric>
         <HStack justifyContent={'flex-end'} varient={'outline'} color="purple.500" Change Role>
           <Button children='change role'

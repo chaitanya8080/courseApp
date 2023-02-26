@@ -17,7 +17,7 @@ import React from 'react';
 import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllUsers, updateUserRole } from '../../../redux/actions/admin';
+import { deleteUser, getAllUsers, updateUserRole } from '../../../redux/actions/admin';
 import Loader from "../../Layout/Loader/Loader"
 
 import Sidebar from '../Sidebar';
@@ -36,13 +36,13 @@ const Users = () => {
  }
 
  const deleteButtonHandler = (userId)=>{
-  console.log(userId)
+  dispatch(deleteUser(userId))
  }
 
 
  useEffect(()=>{
 
-dispatch(getAllUsers())
+    dispatch(getAllUsers())
  },[dispatch])
 
 
@@ -111,6 +111,7 @@ useEffect(() => {
 };
 
 export default Users;
+
 
 function Row({item, updateHandler, deleteButtonHandler}) {
   return (

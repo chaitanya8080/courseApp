@@ -4,7 +4,29 @@ import { createReducer } from '@reduxjs/toolkit';
 
 export const adminReducer = createReducer({},{
 
-    
+    getAdminStatsRequest:(state)=>{
+        state.loading = true
+    },
+    getAdminStatsSuccess:(state,action)=>{
+        state.loading = false;
+        state.stats = action.payload.stats
+        state.viewsCount = action.payload.viewsCount
+        state.SubscriptionCount = action.payload.SubscriptionCount
+        state.usersCount = action.payload.usersCount
+        state.usersPercentage = action.payload.usersPercentage
+        state.subscriptionPercentage = action.payload.subscriptionPercentage
+        state.viewsPercentage = action.payload.viewsPercentage
+        state.usersProfit = action.payload.usersProfit
+        state.subscriptionProfit = action.payload.subscriptionProfit
+        state.viewsProfit = action.payload.viewsProfit
+    },
+
+    getAdminStatsFail:(state,action)=>{
+        state.loading = false;
+        state.error=action.payload;
+    },
+
+
     getAllUsersRequest:(state)=>{
         state.loading = true
     },

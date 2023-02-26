@@ -47,7 +47,7 @@ const Login = () => {
             <FormLabel htmlFor="password" children="Password"></FormLabel>
             <Input
               required
-              id="email"
+              id="password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               type="password"

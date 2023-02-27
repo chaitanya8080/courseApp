@@ -23,7 +23,7 @@ import Dashboard from './components/Admin/Dashboard/Dashboard';
 import CreateCourse from './components/Admin/CreateCourse/CreateCourse';
 import Users from './components/Admin/Users/Users';
 import AdminCourses from './components/Admin/Courses/AdminCourses';
-import Loader from './components/Layout/Loader/Loader';
+
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -61,10 +61,7 @@ function App() {
   return (
     <BrowserRouter>
       <Header isAuthenticated={isAuthenticated} user={user} />
-      {loading ? (
-        <Loader></Loader>
-      ) : (
-        <>
+     
           <Routes>
             <Route path="/" element={<Home />}></Route>
             <Route path="/courses" element={<Courses></Courses>}></Route>
@@ -200,8 +197,6 @@ function App() {
               }
             ></Route>
           </Routes>
-        </>
-      )}
       <Footer />
       <Toaster />
     </BrowserRouter>

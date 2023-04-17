@@ -3,7 +3,8 @@
   
  it includes course related to web development and programming. 
 
-Deployment Link: https://jovial-almeida-2541e4.netlify.app/
+Deployment Link: https://course-app-frontend.vercel.app/
+
 
 
 ## Tech Stack Used
